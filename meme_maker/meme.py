@@ -205,7 +205,7 @@ class Meme:
             half_index = len(font_size_range)/2
             if measures['top']['ratio_diff'] < measures['low']['ratio_diff']:
                 closer = 'top'
-                font_size_range = font_size_range[half_index:-1]
+                font_size_range = font_size_range[int(half_index):-1]
             else:
                 closer = 'low'
                 font_size_range = font_size_range[0:half_index]

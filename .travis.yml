@@ -2,7 +2,10 @@ language: python
 python:
   #TODO: Add more versions to grid (including Py2.7 which requires use of six probably)
   #TODO: Like above (just testing travis :-)
+  - "2.7"
   - "3.5"
+  - "3.6"
+  - "nightly"
 
 env:
   global:

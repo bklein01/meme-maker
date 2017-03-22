@@ -1,5 +1,9 @@
 import unittest
-from unittest.mock import MagicMock, patch, mock_open
+
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 import os
 
@@ -26,15 +30,15 @@ fake_meta = {
 
 class PluginValidatorTestCase(unittest.TestCase):
     def setUp(self):
-        with patch.object(PluginMeta, 'get_meta_content', return_value=fake_meta) as mock_method:
+        with mock.patch.object(PluginMeta, 'get_meta_content', return_value=fake_meta) as mock_method:
             self.validator = PluginValidator(fake_meta['name'])
 
     def test_pass_validation_on_meta_file_present(self):
-        with patch.object(os, 'listdir', return_value=[self.validator.default_meta_file]) as mock_method:
+        with mock.patch.object(os, 'listdir', return_value=[self.validator.default_meta_file]) as mock_method:
             self.assertTrue(self.validator.check_meta_file())
 
     def test_fail_validation_on_meta_file_absence(self):
-        with patch.object(os, 'listdir', return_value=[]) as mock_method:
+        with mock.patch.object(os, 'listdir', return_value=[]) as mock_method:
             self.assertFalse(self.validator.check_meta_file())
 
     def test_pass_on_required_fields_present(self):
@@ -53,8 +57,8 @@ class PluginValidatorTestCase(unittest.TestCase):
     #    self.assertFalse(self.validator.validate_handler())
 
     def test_if_is_valid_pass_plugins_meta_is_set(self):
-        with patch.object(os, 'listdir', return_value=[self.validator.default_meta_file]) as mock_method:
-            with patch.object(os.path, 'exists', return_value=True) as mock_method:
+        with mock.patch.object(os, 'listdir', return_value=[self.validator.default_meta_file]) as mock_method:
+            with mock.patch.object(os.path, 'exists', return_value=True) as mock_method:
                 self.validator.is_valid()
                 self.assertDictEqual(self.validator.plugin.meta, fake_meta)
 
@@ -86,7 +90,7 @@ class PluginTestCase(unittest.TestCase):
 
 class PluginMetaTestCase(unittest.TestCase):
     def setUp(self):
-        with patch.object(PluginMeta, 'get_meta_content', return_value=fake_meta) as mock_method:
+        with mock.patch.object(PluginMeta, 'get_meta_content', return_value=fake_meta) as mock_method:
             self.meta = PluginMeta(fake_meta['name'])
 
     def test_get_plugin_path_returns_full_plugin_path_with_name(self):
