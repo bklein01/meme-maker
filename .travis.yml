@@ -10,4 +10,6 @@ env:
 
 install: "pip install -r requirements/test.txt"
 
-script: python setup.py test
+script:
+  - flake8 --exit-zero
+  - python setup.py test
