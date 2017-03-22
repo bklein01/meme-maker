@@ -9,6 +9,7 @@ import unittest
 import pip
 
 import os
+
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 
@@ -30,15 +31,16 @@ class SetupTypes:
 
 
 class CustomCommand(object):
-
     def prepare_requirements(self, setup_type):
-        requirements = os.path.join(os.getcwd(), SetupTypes.requirements(setup_type))
+        requirements = os.path.join(os.getcwd(),
+                                    SetupTypes.requirements(setup_type))
         assert os.path.exists(requirements), 'Invalid requirements path!'
         return requirements
 
     def prepare_install_requires(self, setup_type=SetupTypes.BASE):
         install_requires = []
-        parsed_requirements = pip.req.parse_requirements(self.prepare_requirements(setup_type), session='nevermind')
+        parsed_requirements = pip.req.parse_requirements(
+            self.prepare_requirements(setup_type), session='nevermind')
         for line in parsed_requirements:
             install_requires.append(str(line.req))
         return install_requires
@@ -46,7 +48,8 @@ class CustomCommand(object):
     def update_extras_requires(self):
         self.distribution.extras_require = {}
         for setup_type in SetupTypes.all:
-            self.distribution.extras_require[setup_type] = self.prepare_install_requires(setup_type)
+            self.distribution.extras_require[
+                setup_type] = self.prepare_install_requires(setup_type)
 
 
 def command_factory(base_command):
@@ -54,13 +57,24 @@ def command_factory(base_command):
         def run(self):
             self.update_extras_requires()
             super(Command, self).run()
+
     return Command
 
 
-class CustomInstall(command_factory(install)):pass
-class CustomDevelop(command_factory(develop)): pass
-class CustomSdist(command_factory(sdist)): pass
-class CustomEggInfo(command_factory(egg_info)): pass
+class CustomInstall(command_factory(install)):
+    pass
+
+
+class CustomDevelop(command_factory(develop)):
+    pass
+
+
+class CustomSdist(command_factory(sdist)):
+    pass
+
+
+class CustomEggInfo(command_factory(egg_info)):
+    pass
 
 
 def tests():
@@ -70,32 +84,32 @@ def tests():
 
 
 setup(name="meme-maker",
-    license = "MIT",
-    version='0.5',
-    description="CLI, API and Slack bot to generate memes. Make memes not war.",
-    maintainer="Jacek Szubert",
-    maintainer_email="jacek.szubert@gmail.com",
-    author="Jacek Szubert",
-    author_email="jacek.szubert@gmail.com",
-    url="https://github.com/jacekszubert/meme-maker",
-    keywords="meme, memes, slack, bot, api, cli, generator",
-    classifiers=["Intended Audience :: Developers",
-                 "License :: OSI Approved :: BSD License",
-                 "Programming Language :: Python",
-                 "Topic :: Software Development :: Libraries :: Python Modules",
-                 ],
-    packages=find_packages(),
-    include_package_data=True,
-    entry_points={
-        'console_scripts': [
-            'meme-maker = meme_maker.__main__:cli',
-        ]
-    },
-    cmdclass={
-        'install': CustomInstall,
-        'develop': CustomDevelop,
-        'sdist': CustomSdist,
-        'egg_info': CustomEggInfo
-    },
-    test_suite='setup.tests'
-)
+      license="MIT",
+      version='0.5',
+      description="CLI, API and Slack bot to generate memes. Make memes not war.",  # NOQA
+      maintainer="Jacek Szubert",
+      maintainer_email="jacek.szubert@gmail.com",
+      author="Jacek Szubert",
+      author_email="jacek.szubert@gmail.com",
+      url="https://github.com/jacekszubert/meme-maker",
+      keywords="meme, memes, slack, bot, api, cli, generator",
+      classifiers=["Intended Audience :: Developers",
+                   "License :: OSI Approved :: BSD License",
+                   "Programming Language :: Python",
+                   "Topic :: Software Development :: Libraries :: Python Modules",  # NOQA
+                   ],
+      packages=find_packages(),
+      include_package_data=True,
+      entry_points={
+          'console_scripts': [
+              'meme-maker = meme_maker.__main__:cli',
+          ]
+      },
+      cmdclass={
+          'install': CustomInstall,
+          'develop': CustomDevelop,
+          'sdist': CustomSdist,
+          'egg_info': CustomEggInfo
+      },
+      test_suite='setup.tests'
+      )

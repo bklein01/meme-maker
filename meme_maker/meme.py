@@ -107,8 +107,8 @@ class Meme:
         self.logger.info('downloading %s' % self.url)
         try:
             image = requests.get(self.url)
-        except requests.exceptions.RequestException as e:
-            self.logger.error('Unable to retreive URL: %s' % url)
+        except requests.exceptions.RequestException as exc:
+            self.logger.error('Unable to retreive URL: %s' % exc)
 
         try:
             self.image = Image.open(io.BytesIO(image.content)).convert('RGB')

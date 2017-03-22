@@ -5,7 +5,6 @@ import importlib
 
 import yaml
 
-
 logger = logging.getLogger('meme.plugins')
 logger.setLevel(logging.INFO)
 
@@ -91,7 +90,7 @@ class PluginMeta(object):
         return os.path.join(self.plugin_path, script_name)
 
 
-#TODO: More validation
+# TODO: More validation
 class PluginValidator(PluginMeta):
     def __init__(self, plugin_name):
         super(PluginValidator, self).__init__(plugin_name)
@@ -100,23 +99,29 @@ class PluginValidator(PluginMeta):
 
     def check_meta_file(self):
         plugin_package = os.listdir(self.plugin_path)
-        if not self.default_meta_file in plugin_package:
-            self.errors.append('Missing meta file {}'.format(self.default_meta_file))
+        if self.default_meta_file not in plugin_package:
+            self.errors.append(
+                'Missing meta file {}'.format(self.default_meta_file))
             return False
         return True
 
     def validate_required_fields(self):
-        common_fields = set(self.plugin_meta_required) & set(self.meta_content.keys())
-        missing_fields = set(self.plugin_meta_required) - set(self.meta_content.keys())
+        common_fields = set(self.plugin_meta_required) & set(
+            self.meta_content.keys())
+        missing_fields = set(self.plugin_meta_required) - set(
+            self.meta_content.keys())
         if len(common_fields) < len(self.plugin_meta_required):
-            self.errors.append('Missing required fields: {}'.format(missing_fields))
+            self.errors.append(
+                'Missing required fields: {}'.format(missing_fields))
             return False
         return True
 
     def validate_unsupported_fields(self):
-        unsupported_fields = set(self.meta_content.keys()) - set(self.plugin_meta_required + self.plugin_meta_optional)
+        unsupported_fields = set(self.meta_content.keys()) - set(
+            self.plugin_meta_required + self.plugin_meta_optional)
         if len(unsupported_fields):
-            self.errors.append('Unsupported field: {}'.format(unsupported_fields))
+            self.errors.append(
+                'Unsupported field: {}'.format(unsupported_fields))
             return False
         return True
 
@@ -203,7 +208,8 @@ class PluginsLoader(PluginMeta):
 
     def discover(self):
         if not os.path.exists(self.plugins_path):
-            logger.error('Unable to resolve plugins path: {}'.format(plugins_path))
+            logger.error(
+                'Unable to resolve plugins path: {}'.format(self.plugins_path))
             return
         self.load()
 
@@ -220,13 +226,16 @@ class PluginsLoader(PluginMeta):
                     logger.error(error)
 
     def load(self):
-        plugins = [plugin
+        plugins = [
+            plugin
             for plugin in os.listdir(self.plugins_path)
-            if os.path.isdir(os.path.join(self.plugins_path, plugin)) and plugin != '__pycache__'
+            if os.path.isdir(os.path.join(self.plugins_path, plugin))
+            and plugin != '__pycache__'
         ]
         try:
             for plugin in self.__prepare(plugins):
-                plugin.module = importlib.import_module('.'.join([__name__, plugin.name, plugin.script]))
+                plugin.module = importlib.import_module(
+                    '.'.join([__name__, plugin.name, plugin.script]))
                 self.plugins[plugin.name] = plugin
         except ImportError as exc:
             logger.error('Unable to load plugins: {}'.format(exc))
@@ -243,6 +252,7 @@ class PluginsLoader(PluginMeta):
             context.result = handler(meme, *args, **kwargs)
             self._dispatch_event(context, 'post')
             return context.result
+
         return wrapper
 
 
@@ -251,5 +261,7 @@ def subscribe(events):
         def wrapper(context):
             if context.event in events:
                 return fn(context)
+
         return wrapper
+
     return real_decorator
