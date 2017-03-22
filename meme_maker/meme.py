@@ -9,9 +9,14 @@ import textwrap
 import time
 import sys
 
+from .plugins import PluginsLoader
 from PIL import Image, ImageDraw, ImageFont
 
 import boto3
+
+
+plugins = PluginsLoader()
+plugins.discover()
 
 
 class Storage:
@@ -97,6 +102,7 @@ class Meme:
     def generate_template_name(self):
         return hashlib.md5(self.url.encode('utf-8')).hexdigest()
 
+    @plugins.dispatch
     def get_image_from_url(self):
         self.logger.info('downloading %s' % self.url)
         try:
@@ -129,6 +135,7 @@ class Meme:
                 Key=path
             )
 
+    @plugins.dispatch
     def get_image(self, path):
         self.logger.info('getting image from %s' % path)
         if self.storage.type == 'local':
